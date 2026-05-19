@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Atelier météo</title>
+
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            margin: 0;
+            padding: 40px;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        #piechart {
+
+            width: 900px;
+            height: 600px;
+
+            margin: auto;
+
+            background: white;
+            border-radius: 20px;
+
+            padding: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>🌧 Répartition des précipitations à Lille</h1>
+
+    <div id="piechart"></div>
+
+    <script>
+
+        google.charts.load('current', {'packages':['corechart']});
+
+        google.charts.setOnLoadCallback(drawChart);
+
+        async function drawChart() {
+
+            const response = await fetch('/lille');
+
+            const json = await response.json();
+
+            let pluieFaible = 0;
+            let pluieMoyenne = 0;
+            let pluieForte = 0;
+
+            json.forEach(jour => {
+
+                const pluie = jour.precipitation;
+
+                if (pluie < 2) {
+                    pluieFaible++;
+                }
+
+                else if (pluie < 6) {
+                    pluieMoyenne++;
+                }
+
+                else {
+                    pluieForte++;
+                }
+
+            });
+
+            const data = google.visualization.arrayToDataTable([
+                ['Type', 'Nombre de jours'],
+                ['🌦 Faible pluie', pluieFaible],
+                ['🌧 Moyenne pluie', pluieMoyenne],
+                ['⛈ Forte pluie', pluieForte]
+            ]);
+
+            const options = {
+                title: 'Répartition des précipitations',
+                pieHole: 0.4
+            };
+
+            const chart = new google.visualization.PieChart(
+                document.getElementById('piechart')
+            );
+
+            chart.draw(data, options);
+        }
+
+    </script>
+
+</body>
+
+</html>

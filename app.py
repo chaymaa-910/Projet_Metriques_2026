@@ -41,8 +41,32 @@ def mongraphique():
 def histogramme():
     return render_template("histogramme.html")
 
+@app.route("/lille")
+def lille():
 
+    url = "https://api.open-meteo.com/v1/forecast?latitude=50.63&longitude=3.06&daily=precipitation_sum&timezone=auto"
 
+    response = requests.get(url)
+
+    data = response.json()
+
+    resultat = []
+
+    dates = data["daily"]["time"]
+    precipitations = data["daily"]["precipitation_sum"]
+
+    for i in range(len(dates)):
+
+        resultat.append({
+            "date": dates[i],
+            "precipitation": precipitations[i]
+        })
+
+    return jsonify(resultat)
+
+@app.route("/atelier")
+def atelier():
+    return render_template("atelier.html")
 
 
 # Ne rien mettre après ce commentaire
